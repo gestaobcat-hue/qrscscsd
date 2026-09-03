@@ -1,0 +1,35 @@
+[build]
+publish = "site"
+functions = "netlify/functions"
+
+[functions]
+node_bundler = "esbuild"
+
+[[redirects]]
+from = "/api/cpf"
+to = "/.netlify/functions/cpf"
+status = 200
+force = true
+
+[[redirects]]
+from = "/api/pix"
+to = "/.netlify/functions/pix"
+status = 200
+force = true
+
+[[redirects]]
+from = "/api/cpf.php"
+to = "/.netlify/functions/cpf"
+status = 200
+force = true
+
+[[redirects]]
+from = "/api/pix.php"
+to = "/.netlify/functions/pix"
+status = 200
+force = true
+
+[[redirects]]
+from = "/"
+to = "/cnh/home.html"
+status = 302

