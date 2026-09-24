@@ -21,7 +21,6 @@ a:hover { color: var(--gov-blue-dark); }
 .gov-header { position: relative; color: #fff; background: var(--gov-navy); border-bottom: 4px solid var(--gov-blue); box-shadow: none; }
 .gov-header__inner, .gov-footer__inner, .gov-breadcrumb, .gov-main { width: min(100% - 2rem, 1120px); margin: 0 auto; }
 .gov-header__inner { min-height: 76px; display: flex; align-items: center; gap: 1rem; }
-.gov-header::after { content: ""; position: absolute; top: 50%; right: max(1rem, calc((100% - 1120px) / 2)); width: 1.65rem; height: 1.65rem; transform: translateY(-50%); border: 2px solid #ffffff !important; border-radius: 50%; background: linear-gradient(90deg, #1351b4 50%, #16255f 50%) !important; box-shadow: none !important; }
 .gov-header__inner > div:first-child { min-width: 0; width: 100%; display: flex; align-items: center; flex-wrap: nowrap; }
 .gov-header__inner > div:first-child > a { flex: 0 0 auto; }
 .gov-header__inner > div:first-child > .gov-service { min-width: 0; flex: 1 1 auto; }
@@ -76,7 +75,6 @@ a:hover { color: var(--gov-blue-dark); }
     .gov-service { min-width: 0; padding-left: .75rem; }
     .gov-service h1 { overflow: hidden; font-size: .8125rem; text-overflow: ellipsis; white-space: nowrap; }
     .gov-service p { overflow: hidden; font-size: .625rem; text-overflow: ellipsis; white-space: nowrap; }
-    .gov-header::after, body.gov-flow header::after { right: .75rem; width: 1.35rem; height: 1.35rem; }
     .gov-main { padding: 1.25rem 0 2rem; }
     .gov-content { width: 100%; }
     .gov-card__header, .gov-card__body { padding: 1rem; }
@@ -95,7 +93,6 @@ a:hover { color: var(--gov-blue-dark); }
 body.gov-flow { min-height: 100vh; background: var(--gov-section); }
 body.gov-flow #root { min-height: 100vh; }
 body.gov-flow header { position: relative !important; inset: auto !important; z-index: 1 !important; color: #fff !important; background: var(--gov-navy) !important; border-bottom: 4px solid var(--gov-blue) !important; box-shadow: none !important; }
-body.gov-flow header::after { content: ""; position: absolute; top: 50%; right: max(1rem, calc((100% - 1120px) / 2)); width: 1.65rem; height: 1.65rem; transform: translateY(-50%); border: 2px solid #ffffff !important; border-radius: 50%; background: linear-gradient(90deg, #1351b4 50%, #16255f 50%) !important; box-shadow: none !important; }
 body.gov-flow header > div { width: min(100% - 2rem, 1120px); min-height: 76px; height: auto; margin: 0 auto; padding: .75rem 0; }
 body.gov-flow header img { width: 126px; height: auto; }
 body.gov-flow header h1, body.gov-flow header p { color: #fff !important; }
