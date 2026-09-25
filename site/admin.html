@@ -121,7 +121,7 @@
             try {
                 const response = await api('/api/proof-admin');
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Falha ao carregar comprovantes.');
+                if (!response.ok) throw new Error(data.message || 'Falha ao carregar comprovantes.');
                 document.querySelector('#total').textContent = `${data.total} comprovante(s)`;
                 document.querySelector('#empty-state').classList.toggle('hidden', data.proofs.length !== 0);
                 list.innerHTML = data.proofs.map(function (proof) {
@@ -155,7 +155,7 @@
                     body: JSON.stringify({ password: document.querySelector('#password').value })
                 });
                 const data = await response.json();
-                if (!response.ok) throw new Error(response.status === 401 ? 'Senha incorreta.' : (data.error || 'Falha ao entrar.'));
+                if (!response.ok) throw new Error(response.status === 401 ? 'Senha incorreta.' : (data.message || 'Falha ao entrar.'));
                 token = data.token;
                 sessionStorage.setItem('proof_admin_token', token);
                 document.querySelector('#password').value = '';

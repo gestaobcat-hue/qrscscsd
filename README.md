@@ -37,6 +37,8 @@ Use `.env.netlify.example` como referência e configure no painel da Netlify:
 - `ADMIN_PASSWORD` (senha de acesso ao painel de comprovantes)
 - `ADMIN_SESSION_SECRET` (opcional, recomendado para assinar sessões administrativas)
 - `PROOF_UPLOAD_SECRET` (opcional, recomendado para assinar permissões de upload)
+- `NETLIFY_BLOBS_TOKEN` (necessário somente quando o contexto automático do Blobs não estiver disponível; use um Personal Access Token da Netlify)
+- `NETLIFY_SITE_ID` (normalmente já é fornecido pela Netlify; corresponde ao Project ID)
 
 Configure as variáveis no painel da Netlify em **Project configuration > Environment variables**, com escopo de Functions. Não coloque senhas reais no `netlify.toml` ou no repositório.
 
@@ -48,6 +50,8 @@ Configure as variáveis no painel da Netlify em **Project configuration > Enviro
 As rotas `/api/cpf`, `/api/pix`, `/api/pix-status`, `/api/proofs` e `/api/proof-admin` são redirecionadas para Netlify Functions.
 
 Os comprovantes são salvos no store persistente `payment-proofs` do Netlify Blobs. O painel permite listar e baixar os arquivos sem expor URLs públicas dos blobs.
+
+Se o painel informar que o storage não está configurado, defina `NETLIFY_BLOBS_TOKEN` no escopo de Functions e publique novamente. A Function combina esse token com o `NETLIFY_SITE_ID` fornecido pelo projeto.
 
 ### Verificação PIX
 

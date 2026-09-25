@@ -1,4 +1,5 @@
 const crypto = require("node:crypto");
+const { getProofStore, storageErrorResponse } = require("./proof-store");
 
 const JSON_HEADERS = {
   "content-type": "application/json; charset=utf-8",
@@ -132,12 +133,12 @@ exports.handler = async (event) => {
   };
 
   try {
-    const { getStore } = await import("@netlify/blobs");
-    const store = getStore({ name: "payment-proofs", consistency: "strong" });
+    const store = await getProofStore();
     await store.set(`proofs/${id}`, file, { metadata, onlyIfNew: true });
     return json(201, { ok: true, id, uploaded_at: uploadedAt });
   } catch (error) {
     console.error("proof_upload_failed", error);
-    return json(500, { error: "proof_storage_failed" });
+    const failure = storageErrorResponse(error);
+    return json(failure.statusCode, failure.body);
   }
 };

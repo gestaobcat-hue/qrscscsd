@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regularize-se | DETRAN</title>
     <link rel="icon" type="image/x-icon" href="../index_files/favicon.ico">
-    <link rel="stylesheet" href="../index_files/govbr.css?v=gov-flow-9">
+    <link rel="stylesheet" href="../index_files/govbr.css?v=gov-flow-11">
     <style>
         .gov-error.is-hidden { display: none; }
     </style>
 </head>
-<body>
+<body class="home-page">
     <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     <div id="root">
         <div class="min-h-screen flex flex-col relative">
@@ -33,20 +33,34 @@
             </div>
 
             <main id="conteudo" class="gov-main">
-                <div class="gov-content">
-                    <div class="gov-card">
-                        <div class="px-5 py-4 border-b border-gray-100 bg-gray-50">
-                            <h2 id="titulo-consulta" class="text-base sm:text-lg font-semibold text-gray-900">Consultar e pagar multas de trânsito</h2>
-                            <p class="text-xs sm:text-sm text-gray-500 mt-1">Consulte os débitos vinculados ao seu CPF e veja as opções disponíveis para pagamento.</p>
+                <div class="gov-content home-shell">
+                    <section class="home-card" aria-labelledby="titulo-consulta">
+                        <div class="home-card__hero">
+                            <div class="home-card__icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+                            </div>
+                            <div class="home-card__heading">
+                                <span class="home-card__eyebrow">Serviço digital seguro</span>
+                                <h2 id="titulo-consulta">Consulte suas multas de trânsito</h2>
+                                <p>Veja débitos vinculados ao seu CPF e regularize suas pendências de forma simples e rápida.</p>
+                            </div>
                         </div>
 
-                        <div class="p-5">
-                            <form class="space-y-4" id="form-cpf">
-                                <div>
-                                    <label for="cpf" class="block text-sm font-medium text-gray-700 mb-1.5">CPF do proprietário ou condutor</label>
-                                    <p id="cpf-help" class="gov-field-help">Digite apenas os 11 números do CPF.</p>
-                                    <input type="tel" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" class="gov-input" autocomplete="off" inputmode="numeric" aria-describedby="cpf-help cpf-errors" value="">
-                                    <div class="mt-1.5 space-y-1">
+                        <div class="home-card__body">
+                            <form id="form-cpf">
+                                <div class="gov-field">
+                                    <div class="home-field__heading">
+                                        <label for="cpf">CPF do proprietário ou condutor</label>
+                                        <span>Obrigatório</span>
+                                    </div>
+                                    <p id="cpf-help" class="gov-field-help">Digite os 11 números. A formatação é aplicada automaticamente.</p>
+                                    <div class="home-input-wrap">
+                                        <span class="home-input-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+                                        </span>
+                                        <input type="tel" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14" class="gov-input" autocomplete="off" inputmode="numeric" aria-describedby="cpf-help cpf-errors" value="">
+                                    </div>
+                                    <div id="cpf-errors" class="gov-errors" aria-live="polite">
                                         <span id="digite_cpf" class="gov-error is-hidden">Por favor, digite seu CPF.</span>
                                         <span id="minimo_cpf" class="gov-error is-hidden">O CPF deve conter 11 dígitos.</span>
                                         <span id="erro_api" class="gov-error is-hidden">Não foi possível consultar no momento. Tente novamente.</span>
@@ -54,20 +68,22 @@
                                 </div>
 
                                 <button id="redirecionamento" disabled="disabled" type="submit" class="gov-button">
-                                    Continuar
+                                    <span>Continuar consulta</span>
+                                    <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
                                 </button>
                             </form>
                         </div>
 
-                        <div class="px-5 py-3 bg-gray-50 border-t border-gray-100">
-                            <p>Ao continuar, você declara que leu os <a href="termos.html" target="_blank" rel="noopener">termos de uso</a> e a <a href="privacidade.html" target="_blank" rel="noopener">política de privacidade</a>.</p>
+                        <div class="home-card__legal">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <p>Seus dados são usados somente para esta consulta. Ao continuar, você concorda com os <a href="termos.html" target="_blank" rel="noopener">termos de uso</a> e a <a href="privacidade.html" target="_blank" rel="noopener">política de privacidade</a>.</p>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="gov-steps" aria-label="Etapas do atendimento">
-                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">1. Consultar</p><p class="text-xs text-gray-500">Informe seu CPF</p></div>
-                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">2. Conferir</p><p class="text-xs text-gray-500">Veja os débitos e valores</p></div>
-                        <div class="bg-white rounded-lg border p-3 text-center"><p class="text-xs font-medium text-blue-700 mb-0.5">3. Pagar</p><p class="text-xs text-gray-500">Escolha uma opção disponível</p></div>
+                    <div class="home-steps" aria-label="Etapas do atendimento">
+                        <div class="home-step home-step--active"><span class="home-step__number">1</span><div><strong>Consultar</strong><span>Informe seu CPF</span></div></div>
+                        <div class="home-step"><span class="home-step__number">2</span><div><strong>Conferir</strong><span>Veja débitos e valores</span></div></div>
+                        <div class="home-step"><span class="home-step__number">3</span><div><strong>Regularizar</strong><span>Conclua o pagamento</span></div></div>
                     </div>
                 </div>
             </main>
@@ -147,9 +163,11 @@
                     return;
                 }
 
-                const oldText = submitButton.textContent;
+                const submitLabel = submitButton.querySelector('span');
+                const oldText = submitLabel.textContent;
                 submitButton.disabled = true;
-                submitButton.textContent = 'Consultando...';
+                submitButton.classList.add('is-loading');
+                submitLabel.textContent = 'Consultando...';
 
                 try {
                     const apiPath = ['localhost', '127.0.0.1'].includes(window.location.hostname)
@@ -176,7 +194,8 @@
                 } catch (err) {
                     document.querySelector('#erro_api').classList.remove('is-hidden');
                     submitButton.disabled = false;
-                    submitButton.textContent = oldText;
+                    submitButton.classList.remove('is-loading');
+                    submitLabel.textContent = oldText;
                 }
         });
     </script>
