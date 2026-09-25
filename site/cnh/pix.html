@@ -32,9 +32,9 @@
 
         <div class="gov-flow-breadcrumb"><div class="gov-flow-breadcrumb__inner"><a href="home.html">Início</a><span class="gov-flow-breadcrumb__separator" aria-hidden="true">&gt;</span><span>Pagamento via PIX</span></div></div>
 
-        <div class="w-full bg-red-600 border-b border-red-700">
+        <div id="payment-timer-bar" class="w-full bg-red-600 border-b border-red-700">
             <div class="max-w-6xl mx-auto px-3 py-2 flex items-center justify-center gap-2">
-                <p class="text-white font-semibold text-sm sm:text-xl leading-none flex items-center gap-2">
+                <p id="timer-message" class="text-white font-semibold text-sm sm:text-xl leading-none flex items-center gap-2">
                     <span>◷</span>
                     <span>Tempo restante para pagamento: <span id="timer">15:00</span></span>
                 </p>
@@ -67,6 +67,7 @@
 
             <section class="bg-white rounded-xl mt-3 sm:mt-4 p-4 sm:p-5">
                 <h1 class="text-center font-semibold text-2xl sm:text-3xl text-gray-900">Pagamento via PIX</h1>
+                <div id="pending-payment-content">
                 <p class="text-center text-gray-600 text-sm sm:text-base mt-1">Escaneie o QR Code ou copie o código PIX abaixo</p>
 
                 <div id="qr-wrap" class="mt-4 text-center">
@@ -111,6 +112,33 @@
                         <button id="proof-submit" type="submit" class="w-full rounded-md bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60">Enviar comprovante</button>
                     </form>
                     <p id="proof-status" class="hidden mt-3 text-sm" role="status"></p>
+                    <div id="proof-success" class="hidden py-2 text-center" role="status">
+                        <div class="mx-auto grid h-14 w-14 place-items-center rounded-full bg-green-100 text-green-700">
+                            <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        </div>
+                        <h3 class="mt-3 text-lg font-bold text-green-900">Comprovante recebido!</h3>
+                        <p class="mx-auto mt-1 max-w-lg text-sm leading-relaxed text-green-900">Seu arquivo foi enviado e será analisado pela equipe responsável. Dentro de até <strong>3 dias</strong>, o pagamento será confirmado após a conferência.</p>
+                        <div class="mx-auto mt-3 inline-flex items-center gap-2 rounded-full border border-green-200 bg-white px-3 py-1.5 text-xs font-semibold text-green-800">
+                            <span class="h-2 w-2 rounded-full bg-green-600"></span>
+                            Protocolo: <span id="proof-protocol">registrado</span>
+                        </div>
+                        <p class="mt-3 text-xs text-green-800">Você pode fechar esta página com segurança. Guarde o protocolo para acompanhamento.</p>
+                    </div>
+                </div>
+                </div>
+
+                <div id="payment-success" class="hidden py-6 text-center" role="status" aria-live="polite">
+                    <div class="mx-auto grid h-20 w-20 place-items-center rounded-full bg-green-100 text-green-700 ring-8 ring-green-50">
+                        <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
+                    <p class="mt-6 text-xs font-bold uppercase tracking-[0.16em] text-green-700">Confirmação automática</p>
+                    <h2 class="mt-1 text-2xl font-bold text-gray-900">Pagamento confirmado!</h2>
+                    <p class="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-gray-600">O PIX foi identificado automaticamente e está confirmado. Não é necessário enviar comprovante.</p>
+                    <div class="mx-auto mt-5 max-w-md rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900">
+                        <p class="font-semibold">Regularização em processamento</p>
+                        <p id="paid-confirmed-at" class="mt-0.5 text-xs text-green-800">Confirmação registrada agora.</p>
+                    </div>
+                    <a href="home.html" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-md bg-blue-700 px-6 py-2.5 text-sm font-semibold text-white no-underline hover:bg-blue-800">Voltar ao início</a>
                 </div>
             </section>
         </main>
@@ -188,17 +216,36 @@
             if (!paymentConfirmed) document.querySelector('#proof-panel').classList.remove('hidden');
         }
 
+        function showProofSubmitted(receiptId) {
+            const panel = document.querySelector('#proof-panel');
+            panel.classList.remove('hidden', 'border-blue-200', 'bg-blue-50');
+            panel.classList.add('border-green-200', 'bg-green-50');
+            panel.querySelector('h2').classList.add('hidden');
+            panel.querySelector('h2 + p').classList.add('hidden');
+            document.querySelector('#proof-form').classList.add('hidden');
+            document.querySelector('#proof-status').classList.add('hidden');
+            document.querySelector('#proof-success').classList.remove('hidden');
+            const protocol = String(receiptId || 'registrado');
+            document.querySelector('#proof-protocol').textContent = protocol === '1' ? 'registrado' : protocol.slice(0, 8).toUpperCase();
+        }
+
         function markPaymentPaid(paidAt) {
             paymentConfirmed = true;
             if (verificationInterval) clearInterval(verificationInterval);
             document.querySelector('#payment-status').className = 'font-semibold text-green-700';
             document.querySelector('#payment-status').innerHTML = '<span class="inline-block w-2 h-2 bg-green-600 rounded-full align-middle mr-1"></span> Pago';
-            document.querySelector('#verify-auto').textContent = paidAt
-                ? `Pagamento confirmado em ${new Date(paidAt).toLocaleString('pt-BR')}.`
-                : 'Pagamento confirmado com sucesso.';
-            document.querySelector('#verify-auto').className = 'mt-3 text-center text-green-700 font-semibold text-sm';
-            document.querySelector('#proof-panel').classList.add('hidden');
-            document.querySelector('#verify-btn').disabled = true;
+            document.querySelector('#pending-payment-content').classList.add('hidden');
+            document.querySelector('#payment-success').classList.remove('hidden');
+
+            const timerBar = document.querySelector('#payment-timer-bar');
+            timerBar.classList.remove('bg-red-600', 'border-red-700');
+            timerBar.classList.add('bg-green-700', 'border-green-800');
+            document.querySelector('#timer-message').innerHTML = '<span>✓</span><span>Pagamento PIX confirmado</span>';
+
+            const confirmedAt = paidAt ? new Date(paidAt) : new Date();
+            document.querySelector('#paid-confirmed-at').textContent = Number.isNaN(confirmedAt.getTime())
+                ? 'Confirmação registrada com sucesso.'
+                : `Confirmação registrada em ${confirmedAt.toLocaleString('pt-BR')}.`;
         }
 
         async function verifyPayment(options) {
@@ -331,11 +378,8 @@
                     if (result.error === 'file_too_large') throw new Error('O arquivo deve ter no máximo 4 MB.');
                     throw new Error('Não foi possível enviar o comprovante. Tente novamente.');
                 }
-                status.classList.add('text-green-700');
-                status.textContent = 'Comprovante enviado com sucesso. Aguarde a análise.';
-                document.querySelector('#proof-file').disabled = true;
-                button.classList.add('hidden');
-                sessionStorage.setItem(`proof_uploaded_${data.transaction_id}`, '1');
+                sessionStorage.setItem(`proof_uploaded_${data.transaction_id}`, result.id || '1');
+                showProofSubmitted(result.id || '1');
             } catch (error) {
                 status.classList.add('text-red-700');
                 status.textContent = error.message || 'Não foi possível enviar o comprovante.';
@@ -384,12 +428,9 @@
         setTimer();
         startPaymentVerification();
 
-        if (data && data.transaction_id && sessionStorage.getItem(`proof_uploaded_${data.transaction_id}`) === '1') {
-            document.querySelector('#proof-status').classList.remove('hidden');
-            document.querySelector('#proof-status').classList.add('text-green-700');
-            document.querySelector('#proof-status').textContent = 'Comprovante enviado com sucesso. Aguarde a análise.';
-            document.querySelector('#proof-file').disabled = true;
-            document.querySelector('#proof-submit').classList.add('hidden');
+        if (data && data.transaction_id) {
+            const savedProof = sessionStorage.getItem(`proof_uploaded_${data.transaction_id}`);
+            if (savedProof) showProofSubmitted(savedProof);
         }
     </script>
 </body>
