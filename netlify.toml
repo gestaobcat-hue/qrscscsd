@@ -18,6 +18,24 @@ status = 200
 force = true
 
 [[redirects]]
+from = "/api/pix-status"
+to = "/.netlify/functions/pix-status"
+status = 200
+force = true
+
+[[redirects]]
+from = "/api/proofs"
+to = "/.netlify/functions/proofs"
+status = 200
+force = true
+
+[[redirects]]
+from = "/api/proof-admin"
+to = "/.netlify/functions/proof-admin"
+status = 200
+force = true
+
+[[redirects]]
 from = "/api/cpf.php"
 to = "/.netlify/functions/cpf"
 status = 200
@@ -28,6 +46,11 @@ from = "/api/pix.php"
 to = "/.netlify/functions/pix"
 status = 200
 force = true
+
+[[redirects]]
+from = "/admin"
+to = "/admin.html"
+status = 200
 
 [[redirects]]
 from = "/"

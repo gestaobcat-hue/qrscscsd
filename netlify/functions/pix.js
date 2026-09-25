@@ -1,3 +1,5 @@
+const crypto = require("node:crypto");
+
 function firstNonEmpty(values) {
   for (const value of values) {
     if (typeof value === "string" && value.trim() !== "") return value;
@@ -134,6 +136,19 @@ exports.handler = async (event) => {
 
     const transactionId = source?.transactionId || source?.id || source?.transaction_id || source?.data?.id || null;
     const paymentUrl = source?.invoiceUrl || source?.payment_url || source?.checkout_url || null;
+    const createdAt = Date.now();
+    let proofToken = null;
+
+    if (transactionId) {
+      const signingSecret = process.env.PROOF_UPLOAD_SECRET || apiKey;
+      const proofPayload = Buffer.from(JSON.stringify({
+        transactionId: String(transactionId),
+        reference,
+        createdAt
+      })).toString("base64url");
+      const proofSignature = crypto.createHmac("sha256", signingSecret).update(proofPayload).digest("base64url");
+      proofToken = `${proofPayload}.${proofSignature}`;
+    }
 
     return {
       statusCode: response.status || 200,
@@ -144,6 +159,8 @@ exports.handler = async (event) => {
         pix_copy_paste: pixCode,
         pix_qr_image: qrImage,
         payment_url: paymentUrl,
+        created_at: new Date(createdAt).toISOString(),
+        proof_token: proofToken,
         raw: decoded
       })
     };

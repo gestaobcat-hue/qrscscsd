@@ -7,7 +7,7 @@
     <link rel="icon" type="image/x-icon" href="../index_files/favicon.ico">
     <link rel="stylesheet" href="../index_files/index-D3hvFbL-.css">
     <script src="../vendor/tailwindcss.js"></script>
-    <link rel="stylesheet" href="../index_files/govbr.css?v=gov-flow-8">
+    <link rel="stylesheet" href="../index_files/govbr.css?v=gov-flow-10">
 </head>
 <body class="gov-flow overflow-x-hidden">
     <div id="root" class="min-h-screen">
@@ -60,7 +60,7 @@
                         <p class="text-gray-700">Nº da Multa:</p>
                         <p id="multa" class="font-bold text-blue-700">-</p>
                         <p class="text-gray-700 mt-2">Status:</p>
-                        <p class="font-semibold text-orange-600"><span class="inline-block w-2 h-2 bg-orange-500 rounded-full align-middle mr-1"></span> Pendente</p>
+                        <p id="payment-status" class="font-semibold text-orange-600"><span class="inline-block w-2 h-2 bg-orange-500 rounded-full align-middle mr-1"></span> Pendente</p>
                     </div>
                 </div>
             </section>
@@ -102,6 +102,16 @@
                 <p id="verify-last" class="text-center text-gray-600 text-sm">Última verificação: --:--:--</p>
                 <p id="copy-ok" class="hidden mt-1 text-center text-green-700 text-sm">Código PIX copiado.</p>
                 <p id="erro" class="hidden mt-1 text-center text-red-600 text-sm">Não foi possível carregar os dados do PIX.</p>
+
+                <div id="proof-panel" class="hidden mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                    <h2 class="font-semibold text-blue-950">Pagamento ainda não confirmado?</h2>
+                    <p class="mt-1 text-sm text-blue-900">Envie o comprovante para análise. Aceitamos PDF, JPG, PNG ou WebP de até 4 MB.</p>
+                    <form id="proof-form" class="mt-3 space-y-3">
+                        <input id="proof-file" type="file" required accept="application/pdf,image/jpeg,image/png,image/webp" class="block w-full rounded-md border border-blue-200 bg-white p-2 text-sm file:mr-3 file:rounded file:border-0 file:bg-blue-100 file:px-3 file:py-2 file:font-semibold file:text-blue-800">
+                        <button id="proof-submit" type="submit" class="w-full rounded-md bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60">Enviar comprovante</button>
+                    </form>
+                    <p id="proof-status" class="hidden mt-3 text-sm" role="status"></p>
+                </div>
             </section>
         </main>
     </div>
@@ -149,20 +159,100 @@
             setInterval(update, 1000);
         }
 
-        function setVerificationClock() {
-            const el = document.querySelector('#verify-last');
-            if (!el) return;
+        let paymentConfirmed = false;
+        let verificationInProgress = false;
+        let verificationInterval = null;
 
-            const update = () => {
-                const now = new Date();
-                const hh = String(now.getHours()).padStart(2, '0');
-                const mm = String(now.getMinutes()).padStart(2, '0');
-                const ss = String(now.getSeconds()).padStart(2, '0');
-                el.textContent = `Última verificação: ${hh}:${mm}:${ss}`;
-            };
+        function checkoutStartedAt() {
+            const fromApi = Date.parse(data && data.created_at ? data.created_at : '');
+            if (Number.isFinite(fromApi)) {
+                sessionStorage.setItem('pix_checkout_started_at', String(fromApi));
+                return fromApi;
+            }
+            const saved = Number(sessionStorage.getItem('pix_checkout_started_at') || 0);
+            if (saved > 0) return saved;
+            const now = Date.now();
+            sessionStorage.setItem('pix_checkout_started_at', String(now));
+            return now;
+        }
 
-            update();
-            setInterval(update, 30000);
+        function updateLastVerification(isoDate) {
+            const date = isoDate ? new Date(isoDate) : new Date();
+            const hh = String(date.getHours()).padStart(2, '0');
+            const mm = String(date.getMinutes()).padStart(2, '0');
+            const ss = String(date.getSeconds()).padStart(2, '0');
+            document.querySelector('#verify-last').textContent = `Última verificação: ${hh}:${mm}:${ss}`;
+        }
+
+        function showProofPanel() {
+            if (!paymentConfirmed) document.querySelector('#proof-panel').classList.remove('hidden');
+        }
+
+        function markPaymentPaid(paidAt) {
+            paymentConfirmed = true;
+            if (verificationInterval) clearInterval(verificationInterval);
+            document.querySelector('#payment-status').className = 'font-semibold text-green-700';
+            document.querySelector('#payment-status').innerHTML = '<span class="inline-block w-2 h-2 bg-green-600 rounded-full align-middle mr-1"></span> Pago';
+            document.querySelector('#verify-auto').textContent = paidAt
+                ? `Pagamento confirmado em ${new Date(paidAt).toLocaleString('pt-BR')}.`
+                : 'Pagamento confirmado com sucesso.';
+            document.querySelector('#verify-auto').className = 'mt-3 text-center text-green-700 font-semibold text-sm';
+            document.querySelector('#proof-panel').classList.add('hidden');
+            document.querySelector('#verify-btn').disabled = true;
+        }
+
+        async function verifyPayment(options) {
+            const settings = options || {};
+            const transactionId = data && data.transaction_id ? String(data.transaction_id) : '';
+            if (!transactionId || verificationInProgress || paymentConfirmed) {
+                if (settings.revealProof && !paymentConfirmed) showProofPanel();
+                return false;
+            }
+
+            verificationInProgress = true;
+            const button = document.querySelector('#verify-btn');
+            if (settings.manual) {
+                button.disabled = true;
+                button.textContent = 'Verificando...';
+            }
+
+            try {
+                const response = await fetch(`/api/pix-status?transaction_id=${encodeURIComponent(transactionId)}`, {
+                    headers: { Accept: 'application/json', 'X-Proof-Token': data.proof_token || '' },
+                    cache: 'no-store'
+                });
+                const result = await response.json();
+                updateLastVerification(result.checked_at);
+                if (!response.ok) throw new Error(result.message || 'Não foi possível consultar agora.');
+                if (result.paid) {
+                    markPaymentPaid(result.paid_at);
+                    return true;
+                }
+                if (settings.manual) {
+                    document.querySelector('#verify-auto').textContent = 'Pagamento ainda pendente. A verificação automática continua ativa.';
+                }
+                return false;
+            } catch (error) {
+                updateLastVerification();
+                if (settings.manual) {
+                    document.querySelector('#verify-auto').textContent = error.message || 'Não foi possível verificar agora.';
+                }
+                return false;
+            } finally {
+                verificationInProgress = false;
+                if (settings.revealProof && !paymentConfirmed) showProofPanel();
+                if (settings.manual && !paymentConfirmed) {
+                    button.disabled = false;
+                    button.textContent = '⟳ Verificar';
+                }
+            }
+        }
+
+        function startPaymentVerification() {
+            verifyPayment();
+            verificationInterval = setInterval(function () { verifyPayment(); }, 30000);
+            const wait = Math.max(0, checkoutStartedAt() + (2 * 60 * 1000) - Date.now());
+            setTimeout(function () { verifyPayment({ revealProof: true }); }, wait);
         }
 
         async function copyPixCode() {
@@ -174,6 +264,83 @@
                 document.querySelector('#erro').classList.add('hidden');
             } catch (e) {
                 document.querySelector('#erro').classList.remove('hidden');
+            }
+        }
+
+        function fileToBase64(file) {
+            return new Promise(function (resolve, reject) {
+                const reader = new FileReader();
+                reader.onload = function () {
+                    const value = String(reader.result || '');
+                    resolve(value.includes(',') ? value.split(',')[1] : value);
+                };
+                reader.onerror = function () { reject(new Error('Não foi possível ler o arquivo.')); };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function uploadProof(event) {
+            event.preventDefault();
+            const file = document.querySelector('#proof-file').files[0];
+            const status = document.querySelector('#proof-status');
+            const button = document.querySelector('#proof-submit');
+            status.classList.remove('hidden', 'text-red-700', 'text-green-700');
+
+            if (!file) {
+                status.classList.add('text-red-700');
+                status.textContent = 'Selecione um arquivo.';
+                return;
+            }
+            if (file.size > 4 * 1024 * 1024) {
+                status.classList.add('text-red-700');
+                status.textContent = 'O arquivo deve ter no máximo 4 MB.';
+                return;
+            }
+            if (!data || !data.transaction_id || !data.proof_token) {
+                status.classList.add('text-red-700');
+                status.textContent = 'Não foi possível validar esta cobrança. Gere um novo PIX e tente novamente.';
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = 'Enviando...';
+            status.textContent = 'Preparando comprovante...';
+            try {
+                const fileBase64 = await fileToBase64(file);
+                const response = await fetch('/api/proofs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        transaction_id: data.transaction_id,
+                        proof_token: data.proof_token,
+                        customer_name: nome,
+                        cpf: cpfMasked,
+                        ticket: meta.ticket || '',
+                        file_name: file.name,
+                        content_type: file.type,
+                        file_base64: fileBase64
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok) {
+                    if (result.error === 'payment_already_confirmed') {
+                        markPaymentPaid();
+                        throw new Error('O pagamento já foi confirmado; não é necessário enviar comprovante.');
+                    }
+                    if (result.error === 'file_content_mismatch' || result.error === 'invalid_file_type') throw new Error('Formato inválido. Envie PDF, JPG, PNG ou WebP.');
+                    if (result.error === 'file_too_large') throw new Error('O arquivo deve ter no máximo 4 MB.');
+                    throw new Error('Não foi possível enviar o comprovante. Tente novamente.');
+                }
+                status.classList.add('text-green-700');
+                status.textContent = 'Comprovante enviado com sucesso. Aguarde a análise.';
+                document.querySelector('#proof-file').disabled = true;
+                button.classList.add('hidden');
+                sessionStorage.setItem(`proof_uploaded_${data.transaction_id}`, '1');
+            } catch (error) {
+                status.classList.add('text-red-700');
+                status.textContent = error.message || 'Não foi possível enviar o comprovante.';
+                button.disabled = false;
+                button.textContent = 'Enviar comprovante';
             }
         }
 
@@ -211,17 +378,19 @@
 
         document.querySelector('#copy-btn').addEventListener('click', copyPixCode);
         document.querySelector('#copy-inline').addEventListener('click', copyPixCode);
-        document.querySelector('#verify-btn').addEventListener('click', function () {
-            const now = new Date();
-            const hh = String(now.getHours()).padStart(2, '0');
-            const mm = String(now.getMinutes()).padStart(2, '0');
-            const ss = String(now.getSeconds()).padStart(2, '0');
-            const el = document.querySelector('#verify-last');
-            if (el) el.textContent = `Última verificação: ${hh}:${mm}:${ss}`;
-        });
+        document.querySelector('#verify-btn').addEventListener('click', function () { verifyPayment({ manual: true }); });
+        document.querySelector('#proof-form').addEventListener('submit', uploadProof);
 
         setTimer();
-        setVerificationClock();
+        startPaymentVerification();
+
+        if (data && data.transaction_id && sessionStorage.getItem(`proof_uploaded_${data.transaction_id}`) === '1') {
+            document.querySelector('#proof-status').classList.remove('hidden');
+            document.querySelector('#proof-status').classList.add('text-green-700');
+            document.querySelector('#proof-status').textContent = 'Comprovante enviado com sucesso. Aguarde a análise.';
+            document.querySelector('#proof-file').disabled = true;
+            document.querySelector('#proof-submit').classList.add('hidden');
+        }
     </script>
 </body>
 </html>

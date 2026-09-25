@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Painel de comprovantes</title>
+    <link rel="icon" type="image/x-icon" href="index_files/favicon.ico">
+    <link rel="stylesheet" href="index_files/index-D3hvFbL-.css">
+    <script src="vendor/tailwindcss.js"></script>
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-900">
+    <header class="bg-slate-900 text-white shadow">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+            <div>
+                <p class="text-xs uppercase tracking-[0.2em] text-slate-300">Administração</p>
+                <h1 class="text-xl font-semibold">Comprovantes PIX</h1>
+            </div>
+            <button id="logout-btn" class="hidden rounded-md border border-slate-500 px-3 py-2 text-sm hover:bg-slate-800">Sair</button>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <section id="login-card" class="max-w-md mx-auto rounded-xl bg-white p-6 shadow-sm border border-slate-200">
+            <h2 class="text-lg font-semibold">Acesso restrito</h2>
+            <p class="mt-1 text-sm text-slate-600">Digite a senha administrativa configurada na Netlify.</p>
+            <form id="login-form" class="mt-5 space-y-4">
+                <div>
+                    <label for="password" class="block text-sm font-medium text-slate-700">Senha</label>
+                    <input id="password" name="password" type="password" autocomplete="current-password" required class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                </div>
+                <button id="login-btn" class="w-full rounded-md bg-blue-700 px-4 py-2.5 font-semibold text-white hover:bg-blue-800">Entrar</button>
+                <p id="login-error" class="hidden text-sm text-red-700" role="alert"></p>
+            </form>
+        </section>
+
+        <section id="dashboard" class="hidden">
+            <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-lg font-semibold">Arquivos recebidos</h2>
+                    <p id="total" class="text-sm text-slate-600">Carregando...</p>
+                </div>
+                <button id="refresh-btn" class="rounded-md bg-white border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">Atualizar</button>
+            </div>
+
+            <div id="admin-error" class="hidden mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert"></div>
+            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+                <table class="min-w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">
+                        <tr><th class="px-4 py-3">Envio</th><th class="px-4 py-3">Condutor</th><th class="px-4 py-3">Multa</th><th class="px-4 py-3">Transação</th><th class="px-4 py-3">Arquivo</th><th class="px-4 py-3 text-right">Ação</th></tr>
+                    </thead>
+                    <tbody id="proof-list" class="divide-y divide-slate-100"></tbody>
+                </table>
+                <p id="empty-state" class="hidden p-8 text-center text-slate-500">Nenhum comprovante recebido.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const loginCard = document.querySelector('#login-card');
+        const dashboard = document.querySelector('#dashboard');
+        const loginForm = document.querySelector('#login-form');
+        const loginError = document.querySelector('#login-error');
+        const adminError = document.querySelector('#admin-error');
+        const logoutBtn = document.querySelector('#logout-btn');
+        const list = document.querySelector('#proof-list');
+        let token = sessionStorage.getItem('proof_admin_token') || '';
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>'"]/g, function (char) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char];
+            });
+        }
+
+        function formatDate(value) {
+            const date = new Date(value);
+            return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString('pt-BR');
+        }
+
+        function formatSize(bytes) {
+            const size = Number(bytes) || 0;
+            if (size < 1024) return `${size} B`;
+            if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+            return `${(size / 1024 / 1024).toFixed(1)} MB`;
+        }
+
+        function showLogin(message) {
+            token = '';
+            sessionStorage.removeItem('proof_admin_token');
+            dashboard.classList.add('hidden');
+            logoutBtn.classList.add('hidden');
+            loginCard.classList.remove('hidden');
+            if (message) {
+                loginError.textContent = message;
+                loginError.classList.remove('hidden');
+            }
+        }
+
+        function showDashboard() {
+            loginCard.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+            logoutBtn.classList.remove('hidden');
+            loginError.classList.add('hidden');
+        }
+
+        async function api(url, options) {
+            const response = await fetch(url, {
+                ...options,
+                headers: { ...(options && options.headers), Authorization: `Bearer ${token}` }
+            });
+            if (response.status === 401) {
+                showLogin('Sua sessão expirou. Entre novamente.');
+                throw new Error('Sessão expirada');
+            }
+            return response;
+        }
+
+        async function loadProofs() {
+            adminError.classList.add('hidden');
+            document.querySelector('#total').textContent = 'Carregando...';
+            try {
+                const response = await api('/api/proof-admin');
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Falha ao carregar comprovantes.');
+                document.querySelector('#total').textContent = `${data.total} comprovante(s)`;
+                document.querySelector('#empty-state').classList.toggle('hidden', data.proofs.length !== 0);
+                list.innerHTML = data.proofs.map(function (proof) {
+                    return `<tr>
+                        <td class="px-4 py-3 whitespace-nowrap">${escapeHtml(formatDate(proof.uploadedAt))}</td>
+                        <td class="px-4 py-3"><strong>${escapeHtml(proof.customerName || '-')}</strong><br><span class="text-xs text-slate-500">${escapeHtml(proof.cpf || '-')}</span></td>
+                        <td class="px-4 py-3">${escapeHtml(proof.ticket || '-')}</td>
+                        <td class="px-4 py-3 font-mono text-xs">${escapeHtml(proof.transactionId || '-')}</td>
+                        <td class="px-4 py-3"><span class="block max-w-[220px] truncate" title="${escapeHtml(proof.originalName)}">${escapeHtml(proof.originalName || 'comprovante')}</span><span class="text-xs text-slate-500">${escapeHtml(formatSize(proof.size))}</span></td>
+                        <td class="px-4 py-3 text-right"><button class="download-btn rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-800" data-id="${escapeHtml(proof.id)}" data-name="${escapeHtml(proof.originalName)}">Baixar</button></td>
+                    </tr>`;
+                }).join('');
+            } catch (error) {
+                if (!token) return;
+                adminError.textContent = error.message || 'Falha ao carregar comprovantes.';
+                adminError.classList.remove('hidden');
+                document.querySelector('#total').textContent = 'Falha ao carregar';
+            }
+        }
+
+        loginForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const button = document.querySelector('#login-btn');
+            button.disabled = true;
+            button.textContent = 'Entrando...';
+            loginError.classList.add('hidden');
+            try {
+                const response = await fetch('/api/proof-admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: document.querySelector('#password').value })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(response.status === 401 ? 'Senha incorreta.' : (data.error || 'Falha ao entrar.'));
+                token = data.token;
+                sessionStorage.setItem('proof_admin_token', token);
+                document.querySelector('#password').value = '';
+                showDashboard();
+                await loadProofs();
+            } catch (error) {
+                loginError.textContent = error.message;
+                loginError.classList.remove('hidden');
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Entrar';
+            }
+        });
+
+        list.addEventListener('click', async function (event) {
+            const button = event.target.closest('.download-btn');
+            if (!button) return;
+            button.disabled = true;
+            const oldText = button.textContent;
+            button.textContent = 'Baixando...';
+            try {
+                const response = await api(`/api/proof-admin?file=${encodeURIComponent(button.dataset.id)}`);
+                if (!response.ok) throw new Error('Falha ao baixar o arquivo.');
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const anchor = document.createElement('a');
+                anchor.href = url;
+                anchor.download = button.dataset.name || 'comprovante';
+                document.body.appendChild(anchor);
+                anchor.click();
+                anchor.remove();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                adminError.textContent = error.message;
+                adminError.classList.remove('hidden');
+            } finally {
+                button.disabled = false;
+                button.textContent = oldText;
+            }
+        });
+
+        document.querySelector('#refresh-btn').addEventListener('click', loadProofs);
+        logoutBtn.addEventListener('click', function () { showLogin(); });
+
+        if (token) {
+            showDashboard();
+            loadProofs();
+        }
+    </script>
+</body>
+</html>

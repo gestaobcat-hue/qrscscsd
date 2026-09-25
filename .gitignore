@@ -3,3 +3,6 @@
 
 # Local environment secrets
 .env
+
+# Installed dependencies
+node_modules/
